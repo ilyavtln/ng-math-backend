@@ -1,7 +1,9 @@
-import psycopg2
 from fastapi import FastAPI
-from src.utils.database import create_connection, execute_query
-from src.config import DB_NAME, DB_HOST, DB_PASSWORD, DB_USER, DB_PORT
+from starlette.responses import RedirectResponse
+
+from src.internal import admin
+from src.router import test
+
 app = FastAPI(
     title="Math backend",
     version="1.0.1",
@@ -9,21 +11,13 @@ app = FastAPI(
 
 @app.get("/")
 def main():
-    return {"message": "Hello world"}
+    return RedirectResponse("/docs")
 
-@app.get("/test")
-def test_bd():
-    connection = create_connection(
-        DB_NAME = DB_NAME,
-        DB_USER = DB_USER,
-        DB_PASSWORD = DB_PASSWORD,
-        DB_HOST=DB_HOST,
-        DB_PORT = DB_PORT
-    )
-
-    query = "SELECT * FROM test"
-    answer = execute_query(connection, query)
-
-    data = [{"id": row[0], "name": row[1], "age": row[2]} for row in answer]
-
-    return data
+# Включаем роутер /api/test
+app.include_router(test.router)
+app.include_router(
+    admin.router,
+    prefix="/admin",
+    tags=["admin"],
+    responses={418: {"description": "I'm a teapot"}},
+)
