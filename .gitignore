@@ -1,6 +1,14 @@
+# ide
 .idea/
+idea/
+
+# venv
 .venv/
+
+# env
+.env.dev
 .env
+
 __pycache__/
 *__pycache__/
 __pycache__/*
